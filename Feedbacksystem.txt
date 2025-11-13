@@ -1,0 +1,318 @@
+Feedback system 
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Audience Feedback System</title>
+  <style>
+    :root{
+      --card-width: 720px;
+      --accent: #6f42c1;
+      --muted: #6b6b6b;
+      --white: #ffffff;
+    }
+
+    /* Page background */
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #ff8a00 0%, #ffb347 100%); /* orange gradient */
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
+      box-sizing:border-box;
+    }
+
+    /* Card */
+    .card{
+      width:100%;
+      max-width:var(--card-width);
+      background:var(--white);
+      border-radius:18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      padding:32px;
+      box-sizing:border-box;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    header{
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    h1{
+      margin:0;
+      font-size:26px;
+      color:#2b2b2b;
+      letter-spacing:0.2px;
+    }
+
+    p.lead{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    form{
+      margin-top:20px;
+    }
+
+    .q{
+      margin-bottom:16px;
+    }
+
+    label{
+      display:block;
+      font-size:14px;
+      color:#333;
+      margin-bottom:8px;
+      font-weight:600;
+    }
+
+    textarea, input[type="text"], input[type="number"], select{
+      width:100%;
+      min-height:44px;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #e6e6e9;
+      font-size:14px;
+      box-sizing:border-box;
+      resize:vertical;
+      background:#fafafa;
+      color:#222;
+    }
+
+    textarea{ min-height:80px; }
+
+    .small{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+
+    /* rating row */
+    .rating-row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .rating-row input[type="range"]{
+      flex:1;
+      -webkit-appearance:none;
+      height:6px;
+      border-radius:6px;
+      background:linear-gradient(90deg,var(--accent),#ff8a00);
+      outline:none;
+    }
+    .rating-value{
+      min-width:46px;
+      text-align:center;
+      font-weight:600;
+      background:#f2f2f2;
+      border-radius:8px;
+      padding:8px 10px;
+    }
+
+    .actions{
+      display:flex;
+      justify-content:center;
+      margin-top:20px;
+    }
+
+    button{
+      padding:12px 26px;
+      border-radius:28px;
+      border:0;
+      background:var(--accent);
+      color:white;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+      box-shadow: 0 6px 18px rgba(111,66,193,0.25);
+    }
+    button:active{ transform:translateY(1px); }
+
+    /* submission modal / result */
+    .result{
+      display:none;
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      background:white;
+      padding:18px;
+      border-radius:12px;
+      box-shadow:0 18px 50px rgba(0,0,0,0.32);
+      max-width:90%;
+      width:520px;
+      z-index:50;
+    }
+    .result pre{
+      max-height:300px;
+      overflow:auto;
+      background:#fbfbfb;
+      padding:12px;
+      border-radius:8px;
+      border:1px solid #eee;
+    }
+    .result .close{
+      margin-top:12px;
+      text-align:right;
+    }
+    .overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      z-index:40;
+    }
+
+    /* responsive */
+    @media (max-width:760px){
+      .card{ padding:20px; border-radius:14px; }
+      h1{ font-size:20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="form-title">
+    <header>
+      <h1 id="form-title">Audience Feedback System</h1>
+      <p class="lead">Please answer the questions below to help us improve.</p>
+    </header>
+
+    <form id="feedbackForm" autocomplete="off" novalidate>
+      <!-- Q1 -->
+      <div class="q">
+        <label for="q1">Q1. What could we do to make your experience better?</label>
+        <textarea id="q1" name="q1" placeholder="Your answer..."></textarea>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q">
+        <label for="q2">Q2. How often do you use our services?</label>
+        <select id="q2" name="q2" aria-label="How often do you use our services?">
+          <option value="">Select frequency...</option>
+          <option>Daily</option>
+          <option>Weekly</option>
+          <option>Monthly</option>
+          <option>Rarely</option>
+          <option>First time</option>
+        </select>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q">
+        <label for="q3">Q3. Was our platform easy to navigate?</label>
+        <textarea id="q3" name="q3" placeholder="Your answer..."></textarea>
+      </div>
+
+      <!-- Q4 (changed) -->
+      <div class="q">
+        <label for="q4">Q4. What additional features can we add to make it easier in future?</label>
+        <textarea id="q4" name="q4" placeholder="Your answer..."></textarea>
+      </div>
+
+      <!-- Q5 (changed) -->
+      <div class="q">
+        <label for="q5">Q5. Do you like our system? Rate it out of 10</label>
+        <div class="rating-row">
+          <input id="q5" name="q5" type="range" min="0" max="10" value="7" step="1" aria-valuemin="0" aria-valuemax="10" />
+          <div class="rating-value" id="q5val">7</div>
+        </div>
+        <div class="small">Slide to set rating (0 = lowest, 10 = highest)</div>
+      </div>
+
+      <!-- Q6 (added) -->
+      <div class="q">
+        <label for="q6">Q6. Any other suggestions?</label>
+        <textarea id="q6" name="q6" placeholder="Your suggestions..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="submitBtn">Submit Feedback</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal result -->
+  <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+  <div class="result" id="resultBox" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <h3 id="resultTitle">Feedback submitted</h3>
+    <p class="small">Below is the data we captured (for demo). In a real app you'd send this to your server.</p>
+    <pre id="resultPre"></pre>
+    <div class="close">
+      <button id="closeBtn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const q5 = document.getElementById('q5');
+      const q5val = document.getElementById('q5val');
+      const form = document.getElementById('feedbackForm');
+      const resultBox = document.getElementById('resultBox');
+      const resultPre = document.getElementById('resultPre');
+      const overlay = document.getElementById('overlay');
+      const closeBtn = document.getElementById('closeBtn');
+
+      // Update rating display
+      q5.addEventListener('input', function(){
+        q5val.textContent = q5.value;
+      });
+
+      // Simple form submit handler
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        // collect values
+        const data = {
+          q1: document.getElementById('q1').value.trim(),
+          q2: document.getElementById('q2').value,
+          q3: document.getElementById('q3').value.trim(),
+          q4: document.getElementById('q4').value.trim(),
+          q5: Number(document.getElementById('q5').value),
+          q6: document.getElementById('q6').value.trim(),
+          submittedAt: new Date().toISOString()
+        };
+
+        // Basic validation: require at least q2 and q5
+        if (!data.q2) {
+          alert('Please select how often you use our services (Q2).');
+          return;
+        }
+
+        // Show captured data
+        resultPre.textContent = JSON.stringify(data, null, 2);
+        overlay.style.display = 'block';
+        resultBox.style.display = 'block';
+        resultBox.focus();
+
+        // In a real implementation you'd send `data` with fetch() to your backend, e.g.
+        // fetch('/api/feedback', { method:'POST', body: JSON.stringify(data), headers:{'Content-Type':'application/json'} })
+
+        // Optionally reset form after submit:
+        // form.reset();
+        // q5val.textContent = '7';
+      });
+
+      // Close modal
+      function closeModal(){
+        overlay.style.display = 'none';
+        resultBox.style.display = 'none';
+      }
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', closeModal);
+      document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') closeModal();
+      });
+    })();
+  </script>
+</body>
+</html>
